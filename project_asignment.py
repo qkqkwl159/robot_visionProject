@@ -59,7 +59,7 @@ def onMouse(event, x, y, flags, param): # 외관상 5개 인자. flags는 키가
             
             
 # 입력 이미지 불러오기
-src = cv2.imread('scanned.jpg')
+src = cv2.imread('/Users/gimhuijun/Library/Mobile Documents/com~apple~CloudDocs/대학수업/2023_4_2/로봇비전/robot_visionProject/IMG_6598.jpg')
 
 if src is None:
     print('Image open failed!')
@@ -74,7 +74,7 @@ dh = round(dw*297 / 210) # A4 용지 크기: 210x297cm 이용
 # 모서리 점들의 좌표, 드래그 상태 여부
 # 내가 선택하려는 모서리 점 4개를 저장하는 넘파이 행렬, 30은 임의로 초기점의 좌표를 설정
 # 완전히 구석이 아니라 모서리를 클릭할 수 있도록 자리를 둠
-srcQuad = np.array([[30, 30], [30, h-30], [w-30, h-30], [w-30, 30]], np.float32) # 모서리 위치
+srcQuad = np.array([[100, 100], [100, h-100], [w-100, h-100], [w-100, 100]], np.float32) # 모서리 위치
 
 # 반시계 방향으로 출력 방향의 위치
 dstQuad = np.array([[0, 0], [0, dh-1], [dw-1, dh-1], [dw-1, 0]], np.float32)
@@ -98,10 +98,18 @@ while True:
         cv2.destroyWindow('img')
         sys.exit()
 
+
+
 # 투시 변환
 pers = cv2.getPerspectiveTransform(srcQuad, dstQuad) # 3X3 투시 변환 행렬 생성
 dst = cv2.warpPerspective(src, pers, (dw, dh), flags=cv2.INTER_CUBIC) # 가로 세로 크기는 자동
+#Create sharpening filter
 
+kernel_sharpening = np.array([[-1, -1, -1],
+                              [-1,9,-1],
+                             [-1,-1,-1]])
+
+dst = cv2.filter2D(src, -1 , kernel_sharpening)# 
 # 결과 영상 출력
 cv2.imshow('dst', dst)
 
